@@ -14,17 +14,17 @@ header_markdown = str("./config/header.md")
 footer_markdown = str("./config/footer.md")
 header_html = str("./config/header.html")
 footer_html = str("./config/footer.html")
+index_html = str("./config/index.html")
 config = str("./config/config.json")
 tags = set()
 authors = set()
 years = set()
 posts = dict()
-sorted_posts = dict()
 
 def main():
     parse_config_json()
     read_markdown_fill_posts(files)
-    # read_markdown_write_individual_html(files)
+    read_markdown_write_individual_html(files)
     read_markdown_create_indices(posts)
     return
 
@@ -51,7 +51,7 @@ def read_markdown_write_individual_html(files):
             footer = footer.read()
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
             html = html + markdown.markdown(footer)
-        with open("./html/" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
+        with open("./html/" + str(posts.get(file_name)[3]) + "/" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
             html_file.write(html)
 
 def read_markdown_fill_posts(files):
@@ -89,10 +89,6 @@ def read_markdown_fill_posts(files):
                         file_year = str(file_cdate.year)
                     if file_author == "":
                         file_author = "anonymous"
-                    if file_summary == "":
-                        file_summary = False
-                    if file_tags == "":
-                        file_tags = False
 
                 years.add(file_year)
                 year_position = parse_config_json.date_format.find("Y")
@@ -106,19 +102,33 @@ def read_markdown_fill_posts(files):
             posts.update({file_name: (file_date_sortable, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
      
 def read_markdown_create_indices(posts):
-    index_html = ""
+    index_html_output = ""
     authors_html = ""
     tags_html = ""
     sorted_posts = dict()
-    # print(posts)
-    for post in posts:
+    for post in posts: # pulling post name and date out of posts dict
         post_value = str(posts.get(post)[0])
         sorted_posts.update({post: post_value})
     sorted_posts = dict(sorted(sorted_posts.items(),key=lambda x:x[1],reverse=True))
-    # print(sorted_posts)
-    for post in sorted_posts: # filling index_html
-        pass
-
-    return
+    with open(header_markdown) as header_md, open(header_html) as header: # starting index_html
+        header = header.read()
+        header_md = header_md.read()
+        header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
+        index_html_output = header
+    for post in sorted_posts: # filling index_html_output
+        with open(index_html) as index_html_file:
+            index_html_output += index_html_file.read()
+            index_html_output = index_html_output.replace("[[$FILE_TITLE]]", posts.get(post)[1])
+            index_html_output = index_html_output.replace("[[$FILE_AUTHOR]]", posts.get(post)[4])
+            index_html_output = index_html_output.replace("[[$FILE_TAGS]]", str(posts.get(post)[6]))
+            index_html_output = index_html_output.replace("[[$FILE_DATE]]", posts.get(post)[2])
+            index_html_output = index_html_output.replace("[[$FILE_SUMMARY]]", posts.get(post)[5])
+    with open(footer_markdown) as footer_md, open(footer_html) as footer: # finishing index_html_output
+        footer_md = footer_md.read()
+        footer = footer.read()
+        footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
+        index_html_output = index_html_output + markdown.markdown(footer)
+    with open(parse_config_json.html_directory + "index.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing index_html_output
+        html_file.write(index_html_output)
 
 main()

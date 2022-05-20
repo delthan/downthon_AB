@@ -3,7 +3,7 @@
  "header_markdown": "./config/header.md",
  "footer_markdown":"./config/footer.md",
  "swag_markdown":"./config/swag.md",
- "html_directory" : "./html",
+ "html_directory" : "./html/",
  "add_sortable_date_to_file_name" : true
 
 
