@@ -51,7 +51,7 @@ def read_markdown_write_individual_html(files):
             footer = footer.read()
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
             html = html + markdown.markdown(footer)
-        with open("./html/" + str(posts.get(file_name)[3]) + "/" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
+        with open(parse_config_json.html_directory + str(posts.get(file_name)[3]) + "/" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
             html_file.write(html)
 
 def read_markdown_fill_posts(files):
