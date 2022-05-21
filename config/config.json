@@ -4,8 +4,8 @@
  "footer_markdown":"./config/footer.md",
  "swag_markdown":"./config/swag.md",
  "html_directory" : "./html/",
+ "markdown_directory" : "./markdown/",
  "add_sortable_date_to_file_name" : true
-
 
 
 }

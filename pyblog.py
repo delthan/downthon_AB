@@ -6,12 +6,7 @@ import json
 from pathlib import Path
 
 
-markdown_directory = Path.cwd() / "markdown"
-files = list(markdown_directory.rglob("*.md*"))
-txt_files = list(markdown_directory.rglob("*.txt*"))
-files.extend(txt_files)
-header_markdown = str("./config/header.md")
-footer_markdown = str("./config/footer.md")
+files = list()
 header_html = str("./config/header.html")
 footer_html = str("./config/footer.html")
 index_html = str("./config/index.html")
@@ -22,18 +17,28 @@ years = set()
 posts = dict()
 
 def main():
-    parse_config_json()
+    parse_config_json(config)
+    make_list_of_files()
     read_markdown_fill_posts(files)
-    read_markdown_write_individual_html(files)
+    # read_markdown_write_individual_html(files)
     read_markdown_create_indices(posts)
     return
 
-def parse_config_json():
-    with open(config) as f:
+def parse_config_json(config_file):
+    with open(config_file) as f:
         data = json.load(f)
         parse_config_json.date_format = data.get("date_format")
         parse_config_json.html_directory = data.get("html_directory")
+        parse_config_json.markdown_directory = data.get("markdown_directory")
         parse_config_json.add_sortable_date_to_file_name = data.get("add_sortable_date_to_file_name")
+        parse_config_json.header_markdown = data.get("header_markdown")
+        parse_config_json.footer_markdown = data.get("footer_markdown")
+        parse_config_json.swag_markdown = data.get("swag_markdown")
+
+def make_list_of_files():
+    for subdir, dirs, files_names in os.walk(parse_config_json.markdown_directory):
+        for file in files_names:
+            files.append(os.path.join(subdir, file))
 
 def read_markdown_write_individual_html(files):
     for file in files:
@@ -41,12 +46,12 @@ def read_markdown_write_individual_html(files):
         with open(file, "r", encoding="utf-8") as md_file:
             md_text = md_file.read()
             html = markdown.markdown(md_text)
-        with open(header_markdown) as header_md, open(header_html) as header:
+        with open(parse_config_json.header_markdown) as header_md, open(header_html) as header:
             header = header.read()
             header_md = header_md.read()
             header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
             html = header + html
-        with open(footer_markdown) as footer_md, open(footer_html) as footer:
+        with open(parse_config_json.footer_markdown) as footer_md, open(footer_html) as footer:
             footer_md = footer_md.read()
             footer = footer.read()
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
@@ -100,7 +105,7 @@ def read_markdown_fill_posts(files):
                 file_date_sortable = file_year + file_month + file_day
 
             posts.update({file_name: (file_date_sortable, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
-     
+ 
 def read_markdown_create_indices(posts):
     index_html_output = ""
     authors_html = ""
@@ -110,7 +115,7 @@ def read_markdown_create_indices(posts):
         post_value = str(posts.get(post)[0])
         sorted_posts.update({post: post_value})
     sorted_posts = dict(sorted(sorted_posts.items(),key=lambda x:x[1],reverse=True))
-    with open(header_markdown) as header_md, open(header_html) as header: # starting index_html
+    with open(parse_config_json.header_markdown) as header_md, open(header_html) as header: # starting index_html
         header = header.read()
         header_md = header_md.read()
         header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
@@ -123,7 +128,7 @@ def read_markdown_create_indices(posts):
             index_html_output = index_html_output.replace("[[$FILE_TAGS]]", str(posts.get(post)[6]))
             index_html_output = index_html_output.replace("[[$FILE_DATE]]", posts.get(post)[2])
             index_html_output = index_html_output.replace("[[$FILE_SUMMARY]]", posts.get(post)[5])
-    with open(footer_markdown) as footer_md, open(footer_html) as footer: # finishing index_html_output
+    with open(parse_config_json.footer_markdown) as footer_md, open(footer_html) as footer: # finishing index_html_output
         footer_md = footer_md.read()
         footer = footer.read()
         footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))

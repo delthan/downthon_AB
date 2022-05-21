@@ -2,7 +2,7 @@ Title: Testing is very important
 Date: 05/10/2022  
 Author: Jay  
 Summary: Lorem ipsum dolor sit amet  
-Tags: test, python, example, rando  
+Tags: test, python, example, tag  
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  
 
