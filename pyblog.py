@@ -16,6 +16,7 @@ authors = set()
 years = set()
 posts = dict()
 
+
 def main():
     parse_config_json(config)
     make_list_of_files()
@@ -23,6 +24,7 @@ def main():
     # read_markdown_write_individual_html(files)
     read_markdown_create_indices(posts)
     return
+
 
 def parse_config_json(config_file):
     with open(config_file) as f:
@@ -35,10 +37,12 @@ def parse_config_json(config_file):
         parse_config_json.footer_markdown = data.get("footer_markdown")
         parse_config_json.swag_markdown = data.get("swag_markdown")
 
+
 def make_list_of_files():
     for subdir, dirs, files_names in os.walk(parse_config_json.markdown_directory):
         for file in files_names:
             files.append(os.path.join(subdir, file))
+
 
 def read_markdown_write_individual_html(files):
     for file in files:
@@ -58,6 +62,7 @@ def read_markdown_write_individual_html(files):
             html = html + markdown.markdown(footer)
         with open(parse_config_json.html_directory + str(posts.get(file_name)[3]) + "/" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
             html_file.write(html)
+
 
 def read_markdown_fill_posts(files):
     for file in files:
@@ -106,6 +111,7 @@ def read_markdown_fill_posts(files):
 
             posts.update({file_name: (file_date_sortable, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
  
+
 def read_markdown_create_indices(posts):
     index_html_output = ""
     authors_html = ""
@@ -135,5 +141,6 @@ def read_markdown_create_indices(posts):
         index_html_output = index_html_output + markdown.markdown(footer)
     with open(parse_config_json.html_directory + "index.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing index_html_output
         html_file.write(index_html_output)
+
 
 main()
