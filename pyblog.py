@@ -13,7 +13,6 @@ index_html = str("./config/index.html")
 config = str("./config/config.json")
 tags = set()
 authors = set()
-years = set()
 posts = dict()
 
 
@@ -100,7 +99,6 @@ def read_markdown_fill_posts(files):
                     if file_author == "":
                         file_author = "anonymous"
 
-                years.add(file_year)
                 year_position = parse_config_json.date_format.find("Y")
                 month_position = parse_config_json.date_format.find("M")
                 day_position = parse_config_json.date_format.find("D")
