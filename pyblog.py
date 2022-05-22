@@ -1,9 +1,9 @@
 import os
+import pathlib
 import markdown
 from datetime import datetime
 import time
 import json
-from pathlib import Path
 
 
 header_html = str("./config/header.html")
@@ -32,7 +32,7 @@ def parse_json_config(config_file, request_string):
         return data_return
 
 
-def parse_date_time(auto_date, manual_date):
+def parse_date_time(auto_date, manual_date): # auto_date = date created by looking at file last modifed date, manual_date is date entered on .md file
     date_format = parse_json_config(config, "date_format")
     manual_formatted_date = manual_date
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
@@ -80,7 +80,8 @@ def parse_date_time(auto_date, manual_date):
 def make_list_of_files():
     for subdir, dirs, files_names in os.walk(parse_json_config(config, "markdown_directory")):
         for file in files_names:
-            files.append(os.path.join(subdir, file))
+            if pathlib.Path(file).suffix == ".md" or pathlib.Path(file).suffix == ".txt":
+                files.append(os.path.join(subdir, file))
 
 
 def read_markdown_write_individual_html(list_of_files):

@@ -1,11 +1,14 @@
 {
  "date_format": "MM/DD/YYYY HH:mm [AM/PM]",
  "twenty_four_hour_time_format" : false,
+
  "header_markdown": "./config/header.md",
  "footer_markdown":"./config/footer.md",
  "swag_markdown":"./config/swag.md",
+
  "html_directory" : "./html/",
  "markdown_directory" : "./markdown/",
+ 
  "default_author" : "anonymous",
  "add_sortable_date_to_file_name" : true,
  "generate_author_index" : true,
