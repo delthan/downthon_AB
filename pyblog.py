@@ -13,8 +13,8 @@ config = str("./config/config.json")
 files = list()
 tags = set()
 authors = set()
-years = set()
 posts = dict()
+years = ()
 
 
 def main():
@@ -30,6 +30,7 @@ def parse_json_config(config_file, request_string):
         data = json.load(f)
         data_return = data.get(request_string)
         return data_return
+
 
 
 def make_list_of_files():
