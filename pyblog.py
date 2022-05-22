@@ -11,9 +11,9 @@ footer_html = str("./config/footer.html")
 index_html = str("./config/index.html")
 config = str("./config/config.json")
 files = list()
+posts = dict()
 tags = set()
 authors = set()
-posts = dict()
 years = set()
 
 
@@ -32,7 +32,7 @@ def parse_json_config(config_file, request_string):
         return data_return
 
 
-def parse_date_time(auto_date, manual_date): # auto_date = date created by looking at file last modifed date, manual_date is date entered on .md file
+def parse_date_time(auto_date, manual_date): # auto_date = date created by looking at file last modifed date, manual_date = date entered on .md file
     date_format = parse_json_config(config, "date_format")
     manual_formatted_date = manual_date
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
@@ -44,17 +44,17 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
     period_position = date_format.find("[")
     
     if auto_date == None:
-        date_period = manual_date[period_position:period_position+2]
-        date_year = manual_date[year_position:year_position+4]
-        date_day = manual_date[day_position:day_position+2]
-        date_month = manual_date[month_position:month_position+2]
+        date_period = manual_formatted_date[period_position:period_position+2]
+        date_year = manual_formatted_date[year_position:year_position+4]
+        date_day = manual_formatted_date[day_position:day_position+2]
+        date_month = manual_formatted_date[month_position:month_position+2]
         if twenty_four_hour_time_format == False:
             if date_period == "PM":
-                date_hour = str(int(manual_date[hour_position:hour_position+2])+12)
+                date_hour = str(int(manual_formatted_date[hour_position:hour_position+2])+12)
         else:
             date_period = ""
-        date_hour = manual_date[hour_position:hour_position+2]
-        date_minute = manual_date[minute_position:minute_position+2]
+        date_hour = manual_formatted_date[hour_position:hour_position+2]
+        date_minute = manual_formatted_date[minute_position:minute_position+2]
     else:
         date_year = str(auto_date.year)
         date_day = str(auto_date.day).zfill(2)
@@ -64,13 +64,13 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
         if twenty_four_hour_time_format == False:
             if int(date_hour) > 12:
                 date_period = "PM"
-                date_hour = str(int(date_hour)-12).zfill(2)
+                manual_format_date_hour = str(int(date_hour)-12).zfill(2)
             else:
                 date_period = "AM"
         else:
             date_period = ""
         
-        manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", date_hour).replace("mm", date_minute).replace("[AM/PM]", date_period)
+        manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", date_hour).replace("mm", date_minute).replace("[AM/PM]", manual_format_date_hour)
     
     sortable_date = str(date_year) + str(date_month) + str(date_day) + str(date_hour) + str(date_minute)
 
@@ -121,18 +121,18 @@ def read_markdown_fill_posts(list_of_files):
             md_text = md_file.read().splitlines(False)
             del md_text[6:]
             for line in md_text:
-                if "Title: " in line:
-                    file_title = line.replace("Title: ", "").strip()
-                elif "Date: " in line:
-                    file_date = line.replace("Date: ", "").strip()
+                if "Title:" in line:
+                    file_title = line.replace("Title:", "").strip()
+                elif "Date:" in line:
+                    file_date = line.replace("Date:", "").strip()
                     file_year = parse_date_time(None, file_date)[2]
-                elif "Author: " in line:
-                    file_author = line.replace("Author: ", "").strip()
+                elif "Author:" in line:
+                    file_author = line.replace("Author:", "").strip()
                     authors.add(file_author)
-                elif "Summary: " in line:
-                    file_summary = line.replace("Summary: ", "").strip()
-                elif "Tags: " in line:
-                    file_tags = list(line.replace("Tags: ", "").strip().split(', '))
+                elif "Summary:" in line:
+                    file_summary = line.replace("Summary:", "").strip()
+                elif "Tags:" in line:
+                    file_tags = list(line.replace("Tags:", "").strip().split(', '))
                     for tag in file_tags:
                         tags.add(tag)
                 else:
@@ -145,29 +145,39 @@ def read_markdown_fill_posts(list_of_files):
                         file_year = str(file_cdate.year)
                     if file_author == "":
                         file_author = parse_json_config(config, "default_author")
+                        authors.add(file_author)
 
                 years.add(file_year)
                 sortable_date = parse_date_time(None, file_date)[0]
 
             posts.update({file_name: (sortable_date, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
- 
 
-def read_markdown_create_indices(posts):
-    index_html_output = ""
-    authors_html = ""
-    tags_html = ""
+
+def read_markdown_create_indices(list_of_posts):
+    tags_html_output = ""
     sorted_posts = dict()
-    for post in posts: # pulling post name and date out of posts dict
-        post_value = str(posts.get(post)[0])
+    sorted_posts_authors = dict()
+    sorted_posts_tags = dict()
+
+    for post in list_of_posts: # pulling post name and date out of posts dict
+        post_value = str(list_of_posts.get(post)[0])
+        author_value = str(list_of_posts.get(post)[4])
+        tags_value = list(list_of_posts.get(post)[6])
         sorted_posts.update({post: post_value})
+        sorted_posts_authors.update({post: author_value})
+        sorted_posts_tags.update({post: tags_value})
     sorted_posts = dict(sorted(sorted_posts.items(),key=lambda x:x[1],reverse=True))
-    with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting index_html
+    sorted_posts_authors = dict(sorted(sorted_posts_authors.items(),key=lambda x:x[1],reverse=True))
+    sorted_posts_tags = dict(sorted(sorted_posts_tags.items(),key=lambda x:x[1],reverse=True)) 
+
+    with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting index_html_output
         header = header.read()
         header_md = header_md.read()
         header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
         index_html_output = header
     for post in sorted_posts: # filling index_html_output
         with open(index_html) as index_html_file:
+            index_html_output = ""
             index_html_output += index_html_file.read()
             index_html_output = index_html_output.replace("[[$FILE_TITLE]]", posts.get(post)[1])
             index_html_output = index_html_output.replace("[[$FILE_AUTHOR]]", posts.get(post)[4])
@@ -178,9 +188,45 @@ def read_markdown_create_indices(posts):
         footer_md = footer_md.read()
         footer = footer.read()
         footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
-        index_html_output = index_html_output + markdown.markdown(footer)
+        index_html_output = index_html_output + footer
     with open(parse_json_config(config, "html_directory") + "index.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing index_html_output
         html_file.write(index_html_output)
+    if parse_json_config(config, "generate_author_index") == True:
+        for author in sorted_posts_authors.values():
+            print("loop starting")
+            authors_html_output = ""
+
+            def author_match(post):
+                if author == sorted_posts_authors.get(post):
+                    return True
+                else:
+                    return False
+            filtered_posts_by_author = set(filter(author_match, sorted_posts_authors))
+
+            with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting author_index_html
+                header = header.read()
+                header_md = header_md.read()
+                header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
+                authors_html_output = header
+            for post in filtered_posts_by_author:
+                print(post)
+                print(author)
+                print(filtered_posts_by_author)
+                with open(index_html) as authors_html_file:
+                    authors_html_output += authors_html_file.read()
+                    authors_html_output = authors_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
+                    authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
+                    authors_html_output = authors_html_output.replace("[[$FILE_TAGS]]", str(list_of_posts.get(post)[6]))
+                    authors_html_output = authors_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
+                    authors_html_output = authors_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
+            with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing author_index_html
+                footer_md = footer_md.read()
+                footer = footer.read()
+                footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
+                authors_html_output = authors_html_output + footer
+            with open(parse_json_config(config, "html_directory") + author.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
+                html_file.write(index_html_output)
+            print("loop ended")
 
 
 main()
