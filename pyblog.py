@@ -18,7 +18,7 @@ years = set()
 
 
 def main():
-    file_listing_and_checks()
+    file_setup()
     read_markdown_fill_posts(files)
     read_markdown_write_posts_html(files)
     read_markdown_create_indices(posts)
@@ -77,7 +77,7 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
     return sortable_date, manual_formatted_date, date_year, date_month, date_day, date_hour, date_minute, date_period
 
 
-def file_listing_and_checks():
+def file_setup():
     for subdir, dirs, files_names in os.walk(parse_json_config(config, "markdown_directory")):
         for file in files_names:
             if pathlib.Path(file).suffix == ".md" or pathlib.Path(file).suffix == ".txt":
