@@ -36,14 +36,14 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
     date_format = parse_json_config(config, "date_format")
     manual_formatted_date = manual_date
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
-    year_position = date_format.find("Y")
-    month_position = date_format.find("M")
-    day_position = date_format.find("D")
-    hour_position = date_format.find("H")
-    minute_position = date_format.find("m")
-    period_position = date_format.find("[")
-    
+
     if auto_date == None:
+        year_position = date_format.find("Y")
+        month_position = date_format.find("M")
+        day_position = date_format.find("D")
+        hour_position = date_format.find("H")
+        minute_position = date_format.find("m")
+        period_position = date_format.find("[")
         date_period = manual_formatted_date[period_position:period_position+2]
         date_year = manual_formatted_date[year_position:year_position+4]
         date_day = manual_formatted_date[day_position:day_position+2]
@@ -70,7 +70,7 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
         else:
             date_period = ""
         
-        manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", date_hour).replace("mm", date_minute).replace("[AM/PM]", manual_format_date_hour)
+        manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", manual_format_date_hour).replace("mm", date_minute).replace("[AM/PM]", date_period)
     
     sortable_date = str(date_year) + str(date_month) + str(date_day) + str(date_hour) + str(date_minute)
 
@@ -190,9 +190,9 @@ def read_markdown_create_indices(list_of_posts):
         index_html_output = header
     for post in sorted_posts: # filling index_html_output
         with open(index_html) as index_html_file:
-            index_html_output = ""
             index_html_output += index_html_file.read()
             index_html_output = index_html_output.replace("[[$FILE_TITLE]]", posts.get(post)[1])
+            index_html_output = index_html_output.replace("[[$LINK]]", "./" + posts.get(post)[3] + "/" + posts.get(post)[0] + "-" + post + ".html")
             index_html_output = index_html_output.replace("[[$FILE_AUTHOR]]", posts.get(post)[4])
             index_html_output = index_html_output.replace("[[$FILE_TAGS]]", str(posts.get(post)[6]))
             index_html_output = index_html_output.replace("[[$FILE_DATE]]", posts.get(post)[2])
@@ -236,8 +236,6 @@ def read_markdown_create_indices(list_of_posts):
     if parse_json_config(config, "generate_tag_index") == True:
         for tags in sorted_posts_tags.values():
             for tag in tags:
-                tags_html_output = ""
-
                 def author_match(post):
                     if tag in sorted_posts_tags.get(post):
                         return True
@@ -245,7 +243,7 @@ def read_markdown_create_indices(list_of_posts):
                         return False
                 filtered_posts_by_tag = set(filter(author_match, sorted_posts_tags))
 
-                with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting author_index_html
+                with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting tag_index_html
                     header = header.read()
                     header_md = header_md.read()
                     header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
@@ -258,14 +256,13 @@ def read_markdown_create_indices(list_of_posts):
                         tags_html_output = tags_html_output.replace("[[$FILE_TAGS]]", str(list_of_posts.get(post)[6]))
                         tags_html_output = tags_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
                         tags_html_output = tags_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
-                with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing author_index_html
+                with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing tag_index_html
                     footer_md = footer_md.read()
                     footer = footer.read()
                     footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
                     tags_html_output = tags_html_output + footer
-                with open(parse_json_config(config, "html_directory") + "/tags/" +  tag.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
+                with open(parse_json_config(config, "html_directory") + "/tags/" +  tag.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing tag_index_html
                     html_file.write(tags_html_output)
-
     if parse_json_config(config, "generate_about_page") == True:
         with open(parse_json_config(config, "about_markdown"), "r", encoding="utf-8") as md_file:
             md_text = md_file.read()

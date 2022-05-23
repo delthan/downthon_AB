@@ -10,10 +10,12 @@ name_of_tool is also my very first programming project. I am starting on my jour
 
 Just download the files and folders and place them in a folder in your computer. You will also need to install Python and Python-Markdown. Then you can run the name_of_tool.py script and the files in the /markdown folder will be recreated as .html files in the /html folder.
 
-You do not have to use any special formatting, or indeed any formatting at all, for the script to work. That said, if you pattern your files after the example_post_format.md file above the script has more direct contect to work with and will generally produce better results.
+You do not have to use any special formatting, or indeed any formatting at all, for the script to work. That said, if you pattern your files after the example_post_format.md file above, the script has more direct context to work with and will generally produce better results.
 
 ## Can I customize anything in my blog?
 
 Yes! In the /config folder there is a file called config.json that allows you to adjust several variables, like the location of the input folder or output folder.
 
-One thing you will _definitely_ want to change is the default information entered in the header.md, footer.md, swag.md, and about.md 
+One thing you will _definitely_ want to change is the default information entered in the header.md, footer.md, swag.md, and about.md files also located in the /config folder. The header and footer files are added to every file created by the script, the swag file is added to each individual post, and the about.md is rendered as a separate about.html file.
+
+You can also edit the associated .html files if you wish.
