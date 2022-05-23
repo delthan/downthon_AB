@@ -18,7 +18,7 @@ years = set()
 
 
 def main():
-    make_list_of_files()
+    file_listing_and_checks()
     read_markdown_fill_posts(files)
     read_markdown_write_posts_html(files)
     read_markdown_create_indices(posts)
@@ -77,11 +77,25 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
     return sortable_date, manual_formatted_date, date_year, date_month, date_day, date_hour, date_minute, date_period
 
 
-def make_list_of_files():
+def file_listing_and_checks():
     for subdir, dirs, files_names in os.walk(parse_json_config(config, "markdown_directory")):
         for file in files_names:
             if pathlib.Path(file).suffix == ".md" or pathlib.Path(file).suffix == ".txt":
                 files.append(os.path.join(subdir, file))
+    if parse_json_config(config, "generate_author_index") == True:
+        if os.path.isfile(parse_json_config(config, "html_directory") + "/author") == False:
+            author_dir = parse_json_config(config, "html_directory") + "/author"
+            os.makedirs(author_dir, mode=0o777, exist_ok=True)
+    if parse_json_config(config, "generate_tag_index") == True:
+        if os.path.isfile(parse_json_config(config, "html_directory") + "/tags") == False:
+            tag_dir = parse_json_config(config, "html_directory") + "/tags"
+            os.makedirs(tag_dir, mode=0o777, exist_ok=True)
+    if os.path.isfile(parse_json_config(config, "html_directory")) == False:
+        html_dir = parse_json_config(config, "html_directory")
+        os.makedirs(html_dir, mode=0o777, exist_ok=True)
+    if os.path.isfile(parse_json_config(config, "markdown_directory")) == False:
+        md_dir = parse_json_config(config, "markdown_directory")
+        os.makedirs(md_dir, mode=0o777, exist_ok=True)
 
 
 def read_markdown_write_posts_html(list_of_files):
@@ -217,19 +231,19 @@ def read_markdown_create_indices(list_of_posts):
                 footer = footer.read()
                 footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
                 authors_html_output = authors_html_output + footer
-            with open(parse_json_config(config, "html_directory") + author.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
+            with open(parse_json_config(config, "html_directory") + "/author/" + author.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
                 html_file.write(authors_html_output)
     if parse_json_config(config, "generate_tag_index") == True:
         for tags in sorted_posts_tags.values():
             for tag in tags:
                 tags_html_output = ""
+
                 def author_match(post):
                     if tag in sorted_posts_tags.get(post):
                         return True
                     else:
                         return False
                 filtered_posts_by_tag = set(filter(author_match, sorted_posts_tags))
-                print(filtered_posts_by_tag)
 
                 with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting author_index_html
                     header = header.read()
@@ -249,8 +263,25 @@ def read_markdown_create_indices(list_of_posts):
                     footer = footer.read()
                     footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
                     tags_html_output = tags_html_output + footer
-                with open(parse_json_config(config, "html_directory") + tag.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
+                with open(parse_json_config(config, "html_directory") + "/tags/" +  tag.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
                     html_file.write(tags_html_output)
+
+    if parse_json_config(config, "generate_about_page") == True:
+        with open(parse_json_config(config, "about_markdown"), "r", encoding="utf-8") as md_file:
+            md_text = md_file.read()
+            html = markdown.markdown(md_text)
+        with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header:
+            header = header.read()
+            header_md = header_md.read()
+            header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
+            html = header + html
+        with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer:
+            footer_md = footer_md.read()
+            footer = footer.read()
+            footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
+            html = html + markdown.markdown(footer)
+        with open(parse_json_config(config, "html_directory") + "about.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
+                html_file.write(html)
 
 
 main()
