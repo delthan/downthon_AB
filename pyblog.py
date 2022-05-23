@@ -25,7 +25,7 @@ def main():
     return
 
 
-def parse_json_config(config_file, request_string):
+def parse_json_config(config_file, request_string): #config_file = json file where the config options live, e.g. 'config', request_string = lookup key from json file
     with open(config_file) as f:
         data = json.load(f)
         data_return = data.get(request_string)
