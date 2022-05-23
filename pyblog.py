@@ -20,7 +20,7 @@ years = set()
 def main():
     make_list_of_files()
     read_markdown_fill_posts(files)
-    read_markdown_write_individual_html(files)
+    read_markdown_write_posts_html(files)
     read_markdown_create_indices(posts)
     return
 
@@ -84,7 +84,7 @@ def make_list_of_files():
                 files.append(os.path.join(subdir, file))
 
 
-def read_markdown_write_individual_html(list_of_files):
+def read_markdown_write_posts_html(list_of_files):
     for file in list_of_files:
         file_name = os.path.basename(file).replace(".md", "").replace(".txt", "").strip().lower()
         with open(file, "r", encoding="utf-8") as md_file:
@@ -154,7 +154,6 @@ def read_markdown_fill_posts(list_of_files):
 
 
 def read_markdown_create_indices(list_of_posts):
-    tags_html_output = ""
     sorted_posts = dict()
     sorted_posts_authors = dict()
     sorted_posts_tags = dict()
@@ -193,9 +192,6 @@ def read_markdown_create_indices(list_of_posts):
         html_file.write(index_html_output)
     if parse_json_config(config, "generate_author_index") == True:
         for author in sorted_posts_authors.values():
-            print("loop starting")
-            authors_html_output = ""
-
             def author_match(post):
                 if author == sorted_posts_authors.get(post):
                     return True
@@ -209,9 +205,6 @@ def read_markdown_create_indices(list_of_posts):
                 header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
                 authors_html_output = header
             for post in filtered_posts_by_author:
-                print(post)
-                print(author)
-                print(filtered_posts_by_author)
                 with open(index_html) as authors_html_file:
                     authors_html_output += authors_html_file.read()
                     authors_html_output = authors_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
@@ -225,8 +218,39 @@ def read_markdown_create_indices(list_of_posts):
                 footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
                 authors_html_output = authors_html_output + footer
             with open(parse_json_config(config, "html_directory") + author.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
-                html_file.write(index_html_output)
-            print("loop ended")
+                html_file.write(authors_html_output)
+    if parse_json_config(config, "generate_tag_index") == True:
+        for tags in sorted_posts_tags.values():
+            for tag in tags:
+                tags_html_output = ""
+                def author_match(post):
+                    if tag in sorted_posts_tags.get(post):
+                        return True
+                    else:
+                        return False
+                filtered_posts_by_tag = set(filter(author_match, sorted_posts_tags))
+                print(filtered_posts_by_tag)
+
+                with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting author_index_html
+                    header = header.read()
+                    header_md = header_md.read()
+                    header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
+                    tags_html_output = header
+                for post in filtered_posts_by_tag:
+                    with open(index_html) as tags_html_file:
+                        tags_html_output += tags_html_file.read()
+                        tags_html_output = tags_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
+                        tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
+                        tags_html_output = tags_html_output.replace("[[$FILE_TAGS]]", str(list_of_posts.get(post)[6]))
+                        tags_html_output = tags_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
+                        tags_html_output = tags_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
+                with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing author_index_html
+                    footer_md = footer_md.read()
+                    footer = footer.read()
+                    footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
+                    tags_html_output = tags_html_output + footer
+                with open(parse_json_config(config, "html_directory") + tag.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
+                    html_file.write(tags_html_output)
 
 
 main()
