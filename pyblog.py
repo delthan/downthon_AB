@@ -25,11 +25,11 @@ def main():
     return
 
 
-def parse_json_config(config_file, request_string): #config_file = json file where the config options live, e.g. 'config', request_string = lookup key from json file
+def parse_json_config(config_file, key_request): #config_file = json file where the config options live, e.g. 'config', key_request = lookup key from json file
     with open(config_file) as f:
         data = json.load(f)
-        data_return = data.get(request_string)
-        return data_return
+        value_return = data.get(key_request)
+        return value_return
 
 
 def parse_date_time(auto_date, manual_date): # auto_date = date created by looking at file last modifed date, manual_date = date entered on .md file

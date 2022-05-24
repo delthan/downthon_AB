@@ -4,7 +4,7 @@
 
 name_of_tool is a simple Python script that can turn a folder of Markdown formatted files into a reasonable facsimile of a blog. It can serve as a simple, feature-light, flat file blogging platform, or could be used to convert a folder of text or markdown notes into a more organized format.
 
-name_of_tool is also my very first programming project. I am starting on my journey of learning to code and this is the project I picked as my first. The idea of a simple script that converted text files into a static blog came to me many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice when I started thinking of options for a first project.
+name_of_tool is also my very first programming project. I am starting on my journey of learning to code and this is the project I picked as my first. I had the idea of a simple script that converted text files into a static blog many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice when I started thinking of options for a first project.
 
 ## How do I use it?
 
@@ -14,6 +14,6 @@ You do not have to use any special formatting, or indeed any formatting at all, 
 
 ## Can I customize anything in my blog?
 
-Yes! In the /config folder there is a file called config.json that allows you to adjust several variables, like the location of the input folder or output folder.
+Yes! In the /config folder there is a file called config.json that allows you to adjust several variables, e.g. the location of the input folder or output folder.
 
-One thing you will _definitely_ want to change is the default information entered in the header.md, footer.md, swag.md, and about.md 
+One thing you will _definitely_ want to customize is the default information entered in the header.md, footer.md, swag.md, and about.md files, also located in the /config folder. 
