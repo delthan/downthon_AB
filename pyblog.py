@@ -9,6 +9,7 @@ import json
 header_html = str("./config/header.html")
 footer_html = str("./config/footer.html")
 index_html = str("./config/index.html")
+post_html = str("./config/post.html")
 config = str("./config/config.json")
 files = list()
 posts = dict()
