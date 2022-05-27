@@ -34,12 +34,12 @@ def parse_json_config(config_file, key_request): #config_file = json file where 
         return value_return
 
 
-def parse_date_time(auto_date, manual_date): # auto_date = date created by looking at file last modifed date, manual_date = date entered on .md file
+def parse_date_time(date, date_type): # date_type is either auto_date = date created by looking at file last modifed date, manual_date = date entered on .md file
     date_format = parse_json_config(config, "date_format")
-    manual_formatted_date = manual_date
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
 
-    if auto_date == None:
+    if date_type == "manual_date":
+        manual_formatted_date = date
         year_position = date_format.find("Y")
         month_position = date_format.find("M")
         day_position = date_format.find("D")
@@ -58,17 +58,18 @@ def parse_date_time(auto_date, manual_date): # auto_date = date created by looki
         date_hour = manual_formatted_date[hour_position:hour_position+2]
         date_minute = manual_formatted_date[minute_position:minute_position+2]
     else:
-        date_year = str(auto_date.year)
-        date_day = str(auto_date.day).zfill(2)
-        date_month = str(auto_date.month).zfill(2)
-        date_hour = str(auto_date.hour).zfill(2)
-        date_minute = str(auto_date.minute).zfill(2)
+        date_year = str(date.year)
+        date_day = str(date.day).zfill(2)
+        date_month = str(date.month).zfill(2)
+        date_hour = str(date.hour).zfill(2)
+        date_minute = str(date.minute).zfill(2)
         if twenty_four_hour_time_format == False:
             if int(date_hour) > 12:
                 date_period = "PM"
                 manual_format_date_hour = str(int(date_hour)-12).zfill(2)
             else:
                 date_period = "AM"
+                manual_format_date_hour = date_hour
         else:
             date_period = ""
         
@@ -175,7 +176,7 @@ def read_markdown_fill_posts(list_of_files):
                     file_title = line.replace("Title:", "").strip()
                 elif "Date:" in line:
                     file_date = line.replace("Date:", "").strip()
-                    file_year = parse_date_time(None, file_date)[2]
+                    file_year = parse_date_time(file_date, "manual_date")[2]
                 elif "Author:" in line:
                     file_author = line.replace("Author:", "").strip()
                     authors.add(file_author)
@@ -190,7 +191,7 @@ def read_markdown_fill_posts(list_of_files):
                         file_title = file_name
                     if file_date == "":
                         file_cdate = datetime.strptime(time.ctime(os.path.getmtime((file))), "%a %b %d %H:%M:%S %Y")
-                        file_date = parse_date_time(file_cdate,file_cdate)
+                        file_date = parse_date_time(file_cdate, "auto_date")
                         file_date = file_date[1]
                         file_year = str(file_cdate.year)
                     if file_author == "":
@@ -198,7 +199,7 @@ def read_markdown_fill_posts(list_of_files):
                         authors.add(file_author)
 
                 years.add(file_year)
-                sortable_date = parse_date_time(None, file_date)[0]
+                sortable_date = parse_date_time(file_date, "manual_date")[0]
 
             posts.update({file_name: (sortable_date, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
 

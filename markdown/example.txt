@@ -1,6 +1,6 @@
-Title:
-Date: 04/23/2022 
-Author:
+Title: This is the title
+Date: 04/23/2022 02:30 PM
+Author: Jay
 Summary: Lorem ipsum dolor sit amet  
 Tags: test, python, example, rando  
 
