@@ -1,4 +1,4 @@
-Title: Testing is very important  
+Title: This is an example post  
 Date: 05/10/2022 01:23 PM  
 Author: Jay  
 Summary: Lorem ipsum dolor sit amet  
