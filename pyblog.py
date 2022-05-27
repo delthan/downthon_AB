@@ -84,17 +84,17 @@ def file_setup():
             if pathlib.Path(file).suffix == ".md" or pathlib.Path(file).suffix == ".txt":
                 files.append(os.path.join(subdir, file))
     if parse_json_config(config, "generate_author_index") == True:
-        if os.path.isfile(parse_json_config(config, "html_directory") + "/author") == False:
+        if os.path.isdir(parse_json_config(config, "html_directory") + "/author") == False:
             author_dir = parse_json_config(config, "html_directory") + "/author"
             os.makedirs(author_dir, mode=0o777, exist_ok=True)
     if parse_json_config(config, "generate_tag_index") == True:
-        if os.path.isfile(parse_json_config(config, "html_directory") + "/tags") == False:
+        if os.path.isdir(parse_json_config(config, "html_directory") + "/tags") == False:
             tag_dir = parse_json_config(config, "html_directory") + "/tags"
             os.makedirs(tag_dir, mode=0o777, exist_ok=True)
-    if os.path.isfile(parse_json_config(config, "html_directory")) == False:
+    if os.path.isdir(parse_json_config(config, "html_directory")) == False:
         html_dir = parse_json_config(config, "html_directory")
         os.makedirs(html_dir, mode=0o777, exist_ok=True)
-    if os.path.isfile(parse_json_config(config, "markdown_directory")) == False:
+    if os.path.isdir(parse_json_config(config, "markdown_directory")) == False:
         md_dir = parse_json_config(config, "markdown_directory")
         os.makedirs(md_dir, mode=0o777, exist_ok=True)
 
@@ -223,6 +223,7 @@ def read_markdown_create_indices(list_of_posts):
                 with open(index_html) as authors_html_file:
                     authors_html_output += authors_html_file.read()
                     authors_html_output = authors_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
+                    authors_html_output = authors_html_output.replace("[[$LINK]]", f"../{posts.get(post)[2]}/{post}.html") 
                     authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
                     authors_html_output = authors_html_output.replace("[[$FILE_TAGS]]", str(list_of_posts.get(post)[6]))
                     authors_html_output = authors_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
