@@ -8,6 +8,7 @@ import json
 
 header_html = str("./config/header.html")
 footer_html = str("./config/footer.html")
+swag_html = str("./config/swag.html")
 index_html = str("./config/index.html")
 post_html = str("./config/post.html")
 config = str("./config/config.json")
@@ -101,26 +102,60 @@ def file_setup():
 
 def read_markdown_write_posts_html(list_of_files):
     for file in list_of_files:
+        
         file_name = os.path.basename(file).replace(".md", "").replace(".txt", "").strip().lower()
+
+        if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+            output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + file_name + ".html"
+        else:
+            output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + file_name + ".html"
+        
         with open(file, "r", encoding="utf-8") as md_file:
-            md_text = md_file.read()
-            html = markdown.markdown(md_text)
+            md_text = md_file.read().splitlines(False)
+            md_text_header = md_file.read().splitlines(False)
+            del md_text[:6]
+            del md_text_header[6:]
+
+            for line in md_text_header:
+                if "Title:" or "Date:" or "Author:" or "Summary:" or "Tags:" not in line.strip():
+                    md_text_header.write(line)
+
+            md_text = "\n".join(md_text_header) + "\n" + "\n".join(md_text)
+
+        with open(post_html, "r", encoding="utf-8") as post:
+            post_html_file = post.read()
+            post_html_file = post_html_file.replace("[[$FILE_TITLE]]", posts.get(file_name)[1])
+            post_html_file = post_html_file.replace("[[$FILE_AUTHOR]]", posts.get(file_name)[4])
+            post_html_file = post_html_file.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(file_name)[4]}.html")
+            post_html_file = post_html_file.replace("[[$FILE_DATE]]", posts.get(file_name)[2])
+            post_html_tags = posts.get(file_name)[6]
+            tags_html = "<a href=[[$TAG_LINK]]>[[$TAG]]</a> &nbsp"
+            tags_html_output = ""
+            for tag in post_html_tags:
+                tags_html_output += tags_html.replace("[[$TAG]]", tag).replace("[[$TAG_LINK]]", f"../tags/{tag}.html")
+            post_html_file = post_html_file.replace("[[$FILE_TAGS]]", tags_html_output)
+
+        html = markdown.markdown(md_text)
+        html = post_html_file + html
+
         with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header:
             header = header.read()
             header_md = header_md.read()
             header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
             html = header + html
+        with open(parse_json_config(config, "swag_markdown")) as swag_md, open(swag_html) as swag:
+            swag = swag.read()
+            swag_md = swag_md.read()
+            swag = swag.replace("[[$CONTENT]]", markdown.markdown(swag_md))
+            html = html + swag     
         with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer:
             footer_md = footer_md.read()
             footer = footer.read()
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
             html = html + markdown.markdown(footer)
-        if parse_json_config(config, "add_sortable_date_to_file_name") == False:
-            with open(parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
-                html_file.write(html)
-        else: 
-            with open(parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + file_name + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
-                html_file.write(html)
+        
+        with open(output_file_path, "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
+            html_file.write(html)
 
 
 def read_markdown_fill_posts(list_of_files):
@@ -195,9 +230,15 @@ def read_markdown_create_indices(list_of_posts):
             index_html_output = index_html_output.replace("[[$FILE_TITLE]]", posts.get(post)[1])
             index_html_output = index_html_output.replace("[[$LINK]]", "./" + posts.get(post)[3] + "/" + posts.get(post)[0] + "-" + post + ".html")
             index_html_output = index_html_output.replace("[[$FILE_AUTHOR]]", posts.get(post)[4])
-            index_html_output = index_html_output.replace("[[$FILE_TAGS]]", str(posts.get(post)[6]))
+            index_html_output = index_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./author/{posts.get(post)[4]}.html")
             index_html_output = index_html_output.replace("[[$FILE_DATE]]", posts.get(post)[2])
             index_html_output = index_html_output.replace("[[$FILE_SUMMARY]]", posts.get(post)[5])
+            index_html_tags = posts.get(post)[6]
+            tags_html = "<a href=[[$TAG_LINK]]>[[$TAG]]</a> &nbsp"
+            tags_html_output = ""
+            for html_tag in index_html_tags:
+                tags_html_output += tags_html.replace("[[$TAG]]", html_tag).replace("[[$TAG_LINK]]", f"./tags/{html_tag}.html")
+            index_html_output = index_html_output.replace("[[$FILE_TAGS]]", tags_html_output)
     with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing index_html_output
         footer_md = footer_md.read()
         footer = footer.read()
@@ -223,11 +264,17 @@ def read_markdown_create_indices(list_of_posts):
                 with open(index_html) as authors_html_file:
                     authors_html_output += authors_html_file.read()
                     authors_html_output = authors_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
-                    authors_html_output = authors_html_output.replace("[[$LINK]]", f"../{posts.get(post)[2]}/{post}.html") 
+                    authors_html_output = authors_html_output.replace("[[$LINK]]", f"../{posts.get(post)[3]}/{posts.get(post)[0]}-{post}.html") 
                     authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
-                    authors_html_output = authors_html_output.replace("[[$FILE_TAGS]]", str(list_of_posts.get(post)[6]))
+                    authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./{posts.get(post)[4]}.html")
                     authors_html_output = authors_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
                     authors_html_output = authors_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
+                    author_html_tags = posts.get(post)[6]
+                    tags_html = "<a href=[[$TAG_LINK]]>[[$TAG]]</a> &nbsp"
+                    tags_html_output = ""
+                    for html_tag in author_html_tags:
+                        tags_html_output += tags_html.replace("[[$TAG]]", html_tag).replace("[[$TAG_LINK]]", f"../tags/{html_tag}.html")
+                    authors_html_output = authors_html_output.replace("[[$FILE_TAGS]]", tags_html_output)
             with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing author_index_html
                 footer_md = footer_md.read()
                 footer = footer.read()
@@ -254,10 +301,17 @@ def read_markdown_create_indices(list_of_posts):
                     with open(index_html) as tags_html_file:
                         tags_html_output += tags_html_file.read()
                         tags_html_output = tags_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
+                        tags_html_output = tags_html_output.replace("[[$LINK]]", f"../{posts.get(post)[2]}/{post}.html") 
                         tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
-                        tags_html_output = tags_html_output.replace("[[$FILE_TAGS]]", str(list_of_posts.get(post)[6]))
+                        tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(post)[4]}.html")
                         tags_html_output = tags_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
                         tags_html_output = tags_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
+                        tags_html_tags = posts.get(post)[6]
+                        tags_html = "<a href=[[$TAG_LINK]]>[[$TAG]]</a> &nbsp"
+                        tags_html_output_string = ""
+                        for html_tag in tags_html_tags:
+                            tags_html_output_string += tags_html.replace("[[$TAG]]", html_tag).replace("[[$TAG_LINK]]", f"./{html_tag}.html")
+                        tags_html_output = tags_html_output.replace("[[$FILE_TAGS]]", tags_html_output_string)
                 with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing tag_index_html
                     footer_md = footer_md.read()
                     footer = footer.read()
