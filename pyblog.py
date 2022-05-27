@@ -20,8 +20,9 @@ years = set()
 
 
 def main():
-    file_setup()
+    files_setup()
     read_markdown_fill_posts(files)
+    folder_checker()
     read_markdown_write_posts_html(files)
     read_markdown_create_indices(posts)
     return
@@ -34,7 +35,7 @@ def parse_json_config(config_file, key_request): #config_file = json file where 
         return value_return
 
 
-def parse_date_time(date, date_type): # date_type is either auto_date = date created by looking at file last modifed date, manual_date = date entered on .md file
+def parse_date_time(date, date_type): # date_type is either auto_date = date created by looking at file last modifed date or manual_date = date entered on .md file
     date_format = parse_json_config(config, "date_format")
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
 
@@ -50,13 +51,14 @@ def parse_date_time(date, date_type): # date_type is either auto_date = date cre
         date_year = manual_formatted_date[year_position:year_position+4]
         date_day = manual_formatted_date[day_position:day_position+2]
         date_month = manual_formatted_date[month_position:month_position+2]
+        date_hour = manual_formatted_date[hour_position:hour_position+2]
+        date_minute = manual_formatted_date[minute_position:minute_position+2]
         if twenty_four_hour_time_format == False:
             if date_period == "PM":
                 date_hour = str(int(manual_formatted_date[hour_position:hour_position+2])+12)
         else:
             date_period = ""
-        date_hour = manual_formatted_date[hour_position:hour_position+2]
-        date_minute = manual_formatted_date[minute_position:minute_position+2]
+        
     else:
         date_year = str(date.year)
         date_day = str(date.day).zfill(2)
@@ -75,42 +77,55 @@ def parse_date_time(date, date_type): # date_type is either auto_date = date cre
         
         manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", manual_format_date_hour).replace("mm", date_minute).replace("[AM/PM]", date_period)
     
-    sortable_date = str(date_year) + str(date_month) + str(date_day) + str(date_hour) + str(date_minute)
+    sortable_date = f"{date_year}{date_month}{date_day}{date_hour}{date_minute}"
 
     return sortable_date, manual_formatted_date, date_year, date_month, date_day, date_hour, date_minute, date_period
 
 
-def file_setup():
+def files_setup(): # Creating list of files
     for subdir, dirs, files_names in os.walk(parse_json_config(config, "markdown_directory")):
         for file in files_names:
             if pathlib.Path(file).suffix == ".md" or pathlib.Path(file).suffix == ".txt":
                 files.append(os.path.join(subdir, file))
+
+
+def folder_checker(): # Checking for output folders, and creating them if they don't exist.
+    author_dir = parse_json_config(config, "html_directory") + "/author"
+    tag_dir = parse_json_config(config, "html_directory") + "/tags"
+    html_dir = parse_json_config(config, "html_directory")
+    md_dir = parse_json_config(config, "markdown_directory")
+
+    if os.path.isdir(html_dir) == False:
+        os.makedirs(html_dir, mode=0o777, exist_ok=True)
     if parse_json_config(config, "generate_author_index") == True:
-        if os.path.isdir(parse_json_config(config, "html_directory") + "/author") == False:
-            author_dir = parse_json_config(config, "html_directory") + "/author"
+        if os.path.isdir(author_dir) == False:   
             os.makedirs(author_dir, mode=0o777, exist_ok=True)
     if parse_json_config(config, "generate_tag_index") == True:
-        if os.path.isdir(parse_json_config(config, "html_directory") + "/tags") == False:
-            tag_dir = parse_json_config(config, "html_directory") + "/tags"
+        if os.path.isdir(tag_dir) == False:          
             os.makedirs(tag_dir, mode=0o777, exist_ok=True)
-    if os.path.isdir(parse_json_config(config, "html_directory")) == False:
-        html_dir = parse_json_config(config, "html_directory")
-        os.makedirs(html_dir, mode=0o777, exist_ok=True)
-    if os.path.isdir(parse_json_config(config, "markdown_directory")) == False:
-        md_dir = parse_json_config(config, "markdown_directory")
+    if os.path.isdir(md_dir) == False:        
         os.makedirs(md_dir, mode=0o777, exist_ok=True)
+    for year in years:
+        if os.path.isdir(html_dir + year) == False:
+            os.makedirs(html_dir + year, mode=0o777, exist_ok=True)
 
 
-def read_markdown_write_posts_html(list_of_files):
+def read_markdown_write_posts_html(list_of_files): # Creating html files for individual posts
     for file in list_of_files:
         
         file_name = os.path.basename(file).replace(".md", "").replace(".txt", "").strip().lower()
 
-        if parse_json_config(config, "add_sortable_date_to_file_name") == False:
-            output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + file_name + ".html"
+        if parse_json_config(config, "use_title_as_file_name") == True:
+            if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[1]).lower().replace(" ", "-") + ".html"
+            else:
+                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + str(posts.get(file_name)[1]).lower().replace(" ", "-") + ".html"
         else:
-            output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + file_name + ".html"
-        
+            if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + file_name + ".html"
+            else:
+                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + file_name + ".html"
+
         with open(file, "r", encoding="utf-8") as md_file:
             md_text = md_file.read().splitlines(False)
             md_text_header = md_file.read().splitlines(False)
@@ -159,7 +174,7 @@ def read_markdown_write_posts_html(list_of_files):
             html_file.write(html)
 
 
-def read_markdown_fill_posts(list_of_files):
+def read_markdown_fill_posts(list_of_files): # Creating posts dictionary
     for file in list_of_files:
         file_title = ""
         file_date = ""
@@ -204,7 +219,7 @@ def read_markdown_fill_posts(list_of_files):
             posts.update({file_name: (sortable_date, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
 
 
-def read_markdown_create_indices(list_of_posts):
+def read_markdown_create_indices(list_of_posts): # Creating html files for indexes
     sorted_posts = dict()
     sorted_posts_authors = dict()
     sorted_posts_tags = dict()
@@ -226,10 +241,21 @@ def read_markdown_create_indices(list_of_posts):
         header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
         index_html_output = header
     for post in sorted_posts: # filling index_html_output
+        if parse_json_config(config, "use_title_as_file_name") == True:
+            if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                output_file_path =  str(posts.get(post)[3]) + "/" + str(posts.get(post)[1]).lower().replace(" ", "-") + ".html"
+            else:
+                output_file_path =  str(posts.get(post)[3]) + "/" + str(posts.get(post)[0]) + "-" + str(posts.get(post)[1]).lower().replace(" ", "-") + ".html"
+        else:
+            if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                output_file_path =  str(posts.get(post)[3]) + "/" + post + ".html"
+            else:
+                output_file_path = str(posts.get(post)[3]) + "/" + str(posts.get(post)[0]) + "-" + post + ".html"
+
         with open(index_html) as index_html_file:
             index_html_output += index_html_file.read()
             index_html_output = index_html_output.replace("[[$FILE_TITLE]]", posts.get(post)[1])
-            index_html_output = index_html_output.replace("[[$LINK]]", "./" + posts.get(post)[3] + "/" + posts.get(post)[0] + "-" + post + ".html")
+            index_html_output = index_html_output.replace("[[$LINK]]", output_file_path)
             index_html_output = index_html_output.replace("[[$FILE_AUTHOR]]", posts.get(post)[4])
             index_html_output = index_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./author/{posts.get(post)[4]}.html")
             index_html_output = index_html_output.replace("[[$FILE_DATE]]", posts.get(post)[2])
@@ -256,6 +282,17 @@ def read_markdown_create_indices(list_of_posts):
                     return False
             filtered_posts_by_author = set(filter(author_match, sorted_posts_authors))
 
+            if parse_json_config(config, "use_title_as_file_name") == True:
+                if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                    output_file_path =  "../" + str(posts.get(post)[3]) + "/" + str(posts.get(post)[1]).lower().replace(" ", "-") + ".html"
+                else:
+                    output_file_path =  "../" + str(posts.get(post)[3]) + "/" + str(posts.get(post)[0]) + "-" + str(posts.get(post)[1]).lower().replace(" ", "-") + ".html"
+            else:
+                if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                    output_file_path =  "../" + str(posts.get(post)[3]) + "/" + post + ".html"
+                else:
+                    output_file_path = "../" + str(posts.get(post)[3]) + "/" + str(posts.get(post)[0]) + "-" + post + ".html"
+
             with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting author_index_html
                 header = header.read()
                 header_md = header_md.read()
@@ -265,7 +302,7 @@ def read_markdown_create_indices(list_of_posts):
                 with open(index_html) as authors_html_file:
                     authors_html_output += authors_html_file.read()
                     authors_html_output = authors_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
-                    authors_html_output = authors_html_output.replace("[[$LINK]]", f"../{posts.get(post)[3]}/{posts.get(post)[0]}-{post}.html") 
+                    authors_html_output = authors_html_output.replace("[[$LINK]]", output_file_path) 
                     authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
                     authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./{posts.get(post)[4]}.html")
                     authors_html_output = authors_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
@@ -293,6 +330,17 @@ def read_markdown_create_indices(list_of_posts):
                         return False
                 filtered_posts_by_tag = set(filter(author_match, sorted_posts_tags))
 
+                if parse_json_config(config, "use_title_as_file_name") == True:
+                    if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                        output_file_path =  "../" + str(posts.get(post)[3]) + "/" + str(posts.get(post)[1]).lower().replace(" ", "-") + ".html"
+                    else:
+                        output_file_path =  "../" + str(posts.get(post)[3]) + "/" + str(posts.get(post)[0]) + "-" + str(posts.get(post)[1]).lower().replace(" ", "-") + ".html"
+                else:
+                    if parse_json_config(config, "add_sortable_date_to_file_name") == False:
+                        output_file_path =  "../" + str(posts.get(post)[3]) + "/" + post + ".html"
+                    else:
+                        output_file_path = "../" + str(posts.get(post)[3]) + "/" + str(posts.get(post)[0]) + "-" + post + ".html"
+
                 with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting tag_index_html
                     header = header.read()
                     header_md = header_md.read()
@@ -302,7 +350,7 @@ def read_markdown_create_indices(list_of_posts):
                     with open(index_html) as tags_html_file:
                         tags_html_output += tags_html_file.read()
                         tags_html_output = tags_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
-                        tags_html_output = tags_html_output.replace("[[$LINK]]", f"../{posts.get(post)[2]}/{post}.html") 
+                        tags_html_output = tags_html_output.replace("[[$LINK]]", output_file_path) 
                         tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
                         tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(post)[4]}.html")
                         tags_html_output = tags_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
