@@ -27,3 +27,7 @@ Maybe?
 Owing to this being my first project, quite a lot of this script could use some improvement. I know there are a ton of things I did in convoluted ways that could be streamlined, and I know some of the areas where I am repeating myself could be redone into cleaner, better written code. And it might be a good exercise to do the work to make those changes, or even add new features, as a part of learning.
 
 On the other hand, I'm sure there are other tools that do this same thing, so I'm not sure if there is much value in this as a continuing concern. We'll see.
+
+## Random bullet point points
+
+*
