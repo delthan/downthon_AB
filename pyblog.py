@@ -35,7 +35,7 @@ def parse_json_config(config_file, key_request): #config_file = json file where 
         return value_return
 
 
-def parse_date_time(date, date_type): # date_type is either auto_date = date created by looking at file last modifed date or manual_date = date entered on .md file
+def parse_date_time(date, date_type): # date_type is either auto_date = date created by looking at file last modified date or manual_date = date entered on .md file
     date_format = parse_json_config(config, "date_format")
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
 
@@ -114,17 +114,21 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
     for file in list_of_files:
         
         file_name = os.path.basename(file).replace(".md", "").replace(".txt", "").strip().lower()
+        html_directory = parse_json_config(config, "html_directory")
+        output_file_year = str(posts.get(file_name)[3])
+        output_file_sortable_date = str(posts.get(file_name)[0])
+        output_file_title_as_filename = str(posts.get(file_name)[1]).lower().replace(" ", "-")
 
         if parse_json_config(config, "use_title_as_file_name") == True:
             if parse_json_config(config, "add_sortable_date_to_file_name") == False:
-                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[1]).lower().replace(" ", "-") + ".html"
+                output_file_path = f"{html_directory}{output_file_year}/{output_file_title_as_filename}.html"
             else:
-                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + str(posts.get(file_name)[1]).lower().replace(" ", "-") + ".html"
+                output_file_path = f"{html_directory}{output_file_year}/{output_file_sortable_date}-{output_file_title_as_filename}.html"
         else:
             if parse_json_config(config, "add_sortable_date_to_file_name") == False:
-                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + file_name + ".html"
+                output_file_path = f"{html_directory}{output_file_year}/{file_name}.html"
             else:
-                output_file_path = parse_json_config(config, "html_directory") + str(posts.get(file_name)[3]) + "/" + str(posts.get(file_name)[0]) + "-" + file_name + ".html"
+                output_file_path = f"{html_directory}{output_file_year}/{output_file_sortable_date}-{file_name}.html"
 
         with open(file, "r", encoding="utf-8") as md_file:
             md_text = md_file.read().splitlines(False)
