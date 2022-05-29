@@ -2,7 +2,7 @@
 
 ## What is downthon_AB?
 
-downthon_AB is a simple Python script that can turn a folder of Markdown formatted .txt or .md files into a reasonable facsimile of a blog. It can serve as a simple, feature-light, flat file blogging platform, or could be used to convert a folder of text or markdown notes into a more organized format.
+downthon_AB is a simple Python script that can turn a folder of Markdown formatted .txt or .md files into a reasonable facsimile of a blog, more or less. It can serve as a simple, feature-light, flat file blogging platform, or could be used to convert a folder of text or markdown notes into a more organized format.
 
 downthon_AB is also my very first coding project. I am starting on my journey of learning to code and this is the project I picked as my starter. I had the idea many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice.
 
