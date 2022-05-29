@@ -12,6 +12,7 @@
  "markdown_directory" : "./markdown/",
  
  "default_author" : "anonymous",
+ "site_title" : "This is a website! This is the title!",
  "add_sortable_date_to_file_name" : true,
  "use_title_as_file_name" : true,
  "generate_author_index" : true,
