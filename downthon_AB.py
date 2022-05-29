@@ -234,8 +234,9 @@ def read_markdown_fill_posts(list_of_files): # Creating posts dictionary
 
                 years.add(file_year)
                 sortable_date = parse_date_time(file_date, "sortable_date")
+                manual_formatted_date = parse_date_time(file_date, "manual_formatted_date")
 
-            posts.update({file_name: (sortable_date, file_title, parse_date_time(file_date, "manual_formatted_date"), file_year, file_author, file_summary, file_tags)}) 
+            posts.update({file_name: (sortable_date, file_title, manual_formatted_date, file_year, file_author, file_summary, file_tags)}) 
 
 
 def read_markdown_create_indices(list_of_posts): # Creating html files for indexes
