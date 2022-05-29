@@ -6,11 +6,11 @@ import time
 import json
 
 
-header_html = str("./config/header.html")
-footer_html = str("./config/footer.html")
-swag_html = str("./config/swag.html")
-index_html = str("./config/index.html")
-post_html = str("./config/post.html")
+header_html = str("./templates/header.html")
+footer_html = str("./templates/footer.html")
+swag_html = str("./templates/swag.html")
+index_html = str("./templates/index.html")
+post_html = str("./templates/post.html")
 config = str("./config/config.json")
 files = list()
 posts = dict()
@@ -52,7 +52,7 @@ def convert_date_format():
     return datetime_formatted_date_format
 
 
-def parse_date_time(date): 
+def parse_date_time(date, return_value): 
     date_format = parse_json_config(config, "date_format")
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
     date_year = str(date.year)
@@ -68,13 +68,26 @@ def parse_date_time(date):
             date_period = "AM"
             manual_format_date_hour = date_hour
     else:
-        date_period = ""
-    
+        date_period = ""    
     manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", manual_format_date_hour).replace("mm", date_minute).replace("[AM/PM]", date_period)
-
     sortable_date = f"{date_year}{date_month}{date_day}{date_hour}{date_minute}"
 
-    return sortable_date, manual_formatted_date, date_year, date_month, date_day, date_hour, date_minute, date_period
+    if return_value == "sortable_date":
+        return sortable_date
+    if return_value == "manual_formatted_date":
+        return manual_formatted_date
+    if return_value == "date_year":
+        return date_year
+    if return_value == "date_month":
+        return date_month
+    if return_value == "date_day":
+        return date_day
+    if return_value == "date_hour":
+        return date_hour
+    if return_value == "date_minute":
+        return date_minute
+    if return_value == "date_period":
+        return date_period
 
 
 def files_setup(): # Creating list of files
@@ -220,9 +233,9 @@ def read_markdown_fill_posts(list_of_files): # Creating posts dictionary
                         authors.add(file_author)
 
                 years.add(file_year)
-                sortable_date = f"{file_date.year}{str(file_date.month).zfill(2)}{str(file_date.day).zfill(2)}{str(file_date.hour).zfill(2)}{str(file_date.minute).zfill(2)}"
+                sortable_date = parse_date_time(file_date, "sortable_date")
 
-            posts.update({file_name: (sortable_date, file_title, parse_date_time(file_date)[1], file_year, file_author, file_summary, file_tags)}) 
+            posts.update({file_name: (sortable_date, file_title, parse_date_time(file_date, "manual_formatted_date"), file_year, file_author, file_summary, file_tags)}) 
 
 
 def read_markdown_create_indices(list_of_posts): # Creating html files for indexes
