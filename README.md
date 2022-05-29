@@ -42,7 +42,7 @@ I would _**love**_ constructive feedback. If anyone reading this has any insight
 
 * If you do not wish to use the default date formatting, it can be changed in the config.json file in the /config folder. You do need to have 4 capital 'Y's in a row, 2 capital 'D's in a row, 2 capital 'M's in a row, 2 capital 'H's in a row, two lower case 'm's in a row, and the string [AM/PM] in your date format, but outside of that you can arrange and delimit those elements in any way you wish.
   * If you have changed the option for a 24 hour clock to True, then you can ignore the [AM/PM] string.
-  * If you don't follow this format, then it is probable that the script will interpret your dates incorrectly.
+  * If you don't follow the format listed above, then it is probable that the script will interpret your dates incorrectly.
 * I don't know much about HTML or CSS so I'm grateful for the existence of [Water.css](https://watercss.kognise.dev/) to style the output .html files.
   * If you want to use another .css file, or roll your own, please edit the header.html file in the /templates folder.
 * If I do come back to add more features, the first two would be as follows:
