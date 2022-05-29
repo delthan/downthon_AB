@@ -11,3 +11,4 @@
 * add about link to footer
 * add site icon (need name first?)
 * add site title to header and config.json
+* index pagination?
