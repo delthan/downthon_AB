@@ -15,4 +15,4 @@
 * index pagination? (not at release, not sure how to handle)
 * a sidebar would be great, with a link to the individual author and tag pages and the about page (not at release, not sure how to handle)
 * look for more places to use date parsing function, to make code more readable
-* should I build .exe and .sh files to ease usage?
+* should I build .exe and .sh files to ease usage? (py-builder)
