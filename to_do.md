@@ -8,7 +8,9 @@
 * ~~add functionality to check if folder exists, create it if it doesn't~~
   * ~~done for major folders, need to figure out how to handle on file creation for posts, specifically for years~~
 * fix index.html link for other files
-* add about link to footer
-* add site icon (need name first?)
-* add site title to header and config.json
-* index pagination?
+* ~~add about link to footer~~
+* ~~add site icon (need name first?)~~
+* ~~add site title to header and config.json~~
+* need to make some improvements to the overall look of the blog html
+* index pagination? (not at release, not sure how to handle)
+* a sidebar would be great, with a link to the individual author and tag pages, and the about page (not at release, not sure how to handle)
