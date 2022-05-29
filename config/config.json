@@ -17,6 +17,7 @@
  "use_title_as_file_name" : true,
  "generate_author_index" : true,
  "generate_tag_index" : true,
- "generate_about_page" : true
+ "generate_about_page" : true,
+ "pagination_posts" : 20
 
 }

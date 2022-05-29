@@ -141,7 +141,7 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
             post_html_file = post.read()
             post_html_file = post_html_file.replace("[[$FILE_TITLE]]", posts.get(file_name)[1])
             post_html_file = post_html_file.replace("[[$FILE_AUTHOR]]", posts.get(file_name)[4])
-            post_html_file = post_html_file.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(file_name)[4]}.html")
+            post_html_file = post_html_file.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(file_name)[4]}.html".lower())
             post_html_file = post_html_file.replace("[[$FILE_DATE]]", posts.get(file_name)[2])
             post_html_tags = posts.get(file_name)[6]
             tags_html = "<a href=[[$TAG_LINK]]>[[$TAG]]</a> &nbsp"
@@ -156,6 +156,9 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
         with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header:
             header = header.read()
             header_md = header_md.read()
+            site_title = parse_json_config(config, "site_title")
+            header = header.replace("[[$HEADER_LINK]]", "../index.html")
+            header = header.replace("[[$SITE_TITLE]]", site_title)
             header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
             html = header + html
         with open(parse_json_config(config, "swag_markdown")) as swag_md, open(swag_html) as swag:
@@ -166,6 +169,10 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
         with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer:
             footer_md = footer_md.read()
             footer = footer.read()
+            if parse_json_config(config, "generate_about_page") == True:
+                footer = footer.replace("[[$FOOTER_LINK]]", "./about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
+            else:
+                footer = footer.replace("[[$FOOTER_LINK]]", "").replace("[[$FOOTER_TEXT]]", "")
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
             html = html + markdown.markdown(footer)
         
@@ -237,6 +244,9 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
     with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting index_html_output
         header = header.read()
         header_md = header_md.read()
+        site_title = parse_json_config(config, "site_title")
+        header = header.replace("[[$HEADER_LINK]]", "./index.html")
+        header = header.replace("[[$SITE_TITLE]]", site_title)
         header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
         index_html_output = header
     for post in sorted_posts: # filling index_html_output
@@ -256,7 +266,7 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
             index_html_output = index_html_output.replace("[[$FILE_TITLE]]", posts.get(post)[1])
             index_html_output = index_html_output.replace("[[$LINK]]", output_file_path)
             index_html_output = index_html_output.replace("[[$FILE_AUTHOR]]", posts.get(post)[4])
-            index_html_output = index_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./author/{posts.get(post)[4]}.html")
+            index_html_output = index_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./author/{posts.get(post)[4]}.html".lower())
             index_html_output = index_html_output.replace("[[$FILE_DATE]]", posts.get(post)[2])
             index_html_output = index_html_output.replace("[[$FILE_SUMMARY]]", posts.get(post)[5])
             index_html_tags = posts.get(post)[6]
@@ -268,6 +278,10 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
     with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing index_html_output
         footer_md = footer_md.read()
         footer = footer.read()
+        if parse_json_config(config, "generate_about_page") == True:
+            footer = footer.replace("[[$FOOTER_LINK]]", "./about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
+        else:
+            footer = footer.replace("[[$FOOTER_LINK]]", "").replace("[[$FOOTER_TEXT]]", "")
         footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
         index_html_output = index_html_output + footer
     with open(parse_json_config(config, "html_directory") + "index.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing index_html_output
@@ -295,6 +309,9 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
             with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting author_index_html
                 header = header.read()
                 header_md = header_md.read()
+                site_title = parse_json_config(config, "site_title")
+                header = header.replace("[[$HEADER_LINK]]", "../index.html")
+                header = header.replace("[[$SITE_TITLE]]", site_title)
                 header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
                 authors_html_output = header
             for post in filtered_posts_by_author:
@@ -303,7 +320,7 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
                     authors_html_output = authors_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
                     authors_html_output = authors_html_output.replace("[[$LINK]]", output_file_path) 
                     authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
-                    authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./{posts.get(post)[4]}.html")
+                    authors_html_output = authors_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"./{posts.get(post)[4]}.html".lower())
                     authors_html_output = authors_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
                     authors_html_output = authors_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
                     author_html_tags = posts.get(post)[6]
@@ -315,6 +332,10 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
             with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing author_index_html
                 footer_md = footer_md.read()
                 footer = footer.read()
+                if parse_json_config(config, "generate_about_page") == True:
+                    footer = footer.replace("[[$FOOTER_LINK]]", "../about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
+                else:
+                    footer = footer.replace("[[$FOOTER_LINK]]", "").replace("[[$FOOTER_TEXT]]", "")
                 footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
                 authors_html_output = authors_html_output + footer
             with open(parse_json_config(config, "html_directory") + "/author/" + author.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing author_index_html
@@ -343,6 +364,9 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
                 with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header: # starting tag_index_html
                     header = header.read()
                     header_md = header_md.read()
+                    site_title = parse_json_config(config, "site_title")
+                    header = header.replace("[[$HEADER_LINK]]", "../index.html")
+                    header = header.replace("[[$SITE_TITLE]]", site_title)
                     header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
                     tags_html_output = header
                 for post in filtered_posts_by_tag:
@@ -351,7 +375,7 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
                         tags_html_output = tags_html_output.replace("[[$FILE_TITLE]]", list_of_posts.get(post)[1])
                         tags_html_output = tags_html_output.replace("[[$LINK]]", output_file_path) 
                         tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR]]", list_of_posts.get(post)[4])
-                        tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(post)[4]}.html")
+                        tags_html_output = tags_html_output.replace("[[$FILE_AUTHOR_LINK]]", f"../author/{posts.get(post)[4]}.html".lower())
                         tags_html_output = tags_html_output.replace("[[$FILE_DATE]]", list_of_posts.get(post)[2])
                         tags_html_output = tags_html_output.replace("[[$FILE_SUMMARY]]", list_of_posts.get(post)[5])
                         tags_html_tags = posts.get(post)[6]
@@ -363,6 +387,10 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
                 with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer: # finishing tag_index_html
                     footer_md = footer_md.read()
                     footer = footer.read()
+                    if parse_json_config(config, "generate_about_page") == True:
+                        footer = footer.replace("[[$FOOTER_LINK]]", "../about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
+                    else:
+                        footer = footer.replace("[[$FOOTER_LINK]]", "").replace("[[$FOOTER_TEXT]]", "")
                     footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
                     tags_html_output = tags_html_output + footer
                 with open(parse_json_config(config, "html_directory") + "/tags/" +  tag.lower() + ".html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file: # writing tag_index_html
@@ -374,11 +402,18 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
         with open(parse_json_config(config, "header_markdown")) as header_md, open(header_html) as header:
             header = header.read()
             header_md = header_md.read()
+            site_title = parse_json_config(config, "site_title")
+            header = header.replace("[[$HEADER_LINK]]", "../index.html")
+            header = header.replace("[[$SITE_TITLE]]", site_title)
             header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
             html = header + html
         with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer:
             footer_md = footer_md.read()
             footer = footer.read()
+            if parse_json_config(config, "generate_about_page") == True:
+                footer = footer.replace("[[$FOOTER_LINK]]", "./about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
+            else:
+                footer = footer.replace("[[$FOOTER_LINK]]", "").replace("[[$FOOTER_TEXT]]", "")
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
             html = html + markdown.markdown(footer)
         with open(parse_json_config(config, "html_directory") + "about.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as html_file:
