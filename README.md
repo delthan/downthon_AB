@@ -4,7 +4,7 @@
 
 downthon_AB is a simple Python script that can turn a folder of Markdown formatted .txt or .md files into a reasonable facsimile of a blog. It can serve as a simple, feature-light, flat file blogging platform, or could be used to convert a folder of text or markdown notes into a more organized format.
 
-downthon_AB is also my very first programming project. I am starting on my journey of learning to code and this is the project I picked as my starter. I had the idea many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice.
+downthon_AB is also my very first coding project. I am starting on my journey of learning to code and this is the project I picked as my starter. I had the idea many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice.
 
 ## How do I use it?
 
@@ -34,12 +34,16 @@ Owing to this being my first project, quite a lot of this script could use some 
 
 On the other hand, I'm sure there are other tools that do the same thing, likely better, so I'm not sure if there's much value in this as a continuing concern. We'll see.
 
+## Given the first part of your answer above, would you be willing to entertain some constructive feedback on this project?
+
+I would _**love**_ constructive feedback. If anyone reading this has any insights to share on better ways of doing anything I am doing wrong, please feel free to share.
+
 ## Random bullet point points
 
 * If you do not wish to use the default date formatting, it can be changed in the config.json file in the /config folder. You do need to have 4 capital 'Y's in a row, 2 capital 'D's in a row, 2 capital 'M's in a row, 2 capital 'H's in a row, two lower case 'm's in a row, and the string [AM/PM] in your date format, but outside of that you can arrange and delimit those elements in any way you wish.
   * If you have changed the option for a 24 hour clock to True, then you can ignore the [AM/PM] string.
   * If you don't follow this format, then it is probable that the script will interpret your dates incorrectly.
-* I don't know much about HTML and CSS so I'm grateful for the existence of [Water.css](https://watercss.kognise.dev/) to style the output .html files.
+* I don't know much about HTML or CSS so I'm grateful for the existence of [Water.css](https://watercss.kognise.dev/) to style the output .html files.
   * If you want to use another .css file, or roll your own, please edit the header.html file in the /templates folder.
 * If I do come back to add more features, the first two would be as follows:
   * Adding pagination to the main index.html file. Currently, everything that the script sees as a post ends up on that file, so it could get over-large with enough posts.
