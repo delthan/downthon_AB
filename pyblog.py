@@ -19,7 +19,7 @@ authors = set()
 years = set()
 
 
-def main():
+def main(): # program flow
     files_setup()
     read_markdown_fill_posts(files)
     folder_checker()
@@ -28,7 +28,7 @@ def main():
     return
 
 
-def parse_json_config(config_file, key_request): #config_file = json file where the config options live, e.g. 'config', key_request = lookup key from json file
+def parse_json_config(config_file, key_request): # config_file = json file where the config options live, e.g. 'config', key_request = lookup key from json file
     with open(config_file) as f:
         data = json.load(f)
         value_return = data.get(key_request)
