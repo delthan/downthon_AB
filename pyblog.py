@@ -35,48 +35,43 @@ def parse_json_config(config_file, key_request): #config_file = json file where 
         return value_return
 
 
-def parse_date_time(date, date_type): # date_type is either auto_date = date created by looking at file last modified date or manual_date = date entered on .md file
+def convert_date_format():
+    twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
+    datetime_formatted_date_format = parse_json_config(config, "date_format")
+    datetime_formatted_date_format = datetime_formatted_date_format.replace("MM", "%m")
+    datetime_formatted_date_format = datetime_formatted_date_format.replace("DD", "%d")
+    datetime_formatted_date_format = datetime_formatted_date_format.replace("YYYY", "%Y")
+    datetime_formatted_date_format = datetime_formatted_date_format.replace("mm", "%M")
+    if twenty_four_hour_time_format == False:
+        datetime_formatted_date_format = datetime_formatted_date_format.replace("HH", "%I")
+        datetime_formatted_date_format = datetime_formatted_date_format.replace("[AM/PM]", "%p")
+    else:
+        datetime_formatted_date_format = datetime_formatted_date_format.replace("HH", "%H")
+        datetime_formatted_date_format = datetime_formatted_date_format.replace("[AM/PM]", "")       
+
+    return datetime_formatted_date_format
+
+
+def parse_date_time(date): 
     date_format = parse_json_config(config, "date_format")
     twenty_four_hour_time_format = parse_json_config(config, "twenty_four_hour_time_format")
-
-    if date_type == "manual_date":
-        manual_formatted_date = date
-        year_position = date_format.find("Y")
-        month_position = date_format.find("M")
-        day_position = date_format.find("D")
-        hour_position = date_format.find("H")
-        minute_position = date_format.find("m")
-        period_position = date_format.find("[")
-        date_period = manual_formatted_date[period_position:period_position+2]
-        date_year = manual_formatted_date[year_position:year_position+4]
-        date_day = manual_formatted_date[day_position:day_position+2]
-        date_month = manual_formatted_date[month_position:month_position+2]
-        date_hour = manual_formatted_date[hour_position:hour_position+2]
-        date_minute = manual_formatted_date[minute_position:minute_position+2]
-        if twenty_four_hour_time_format == False:
-            if date_period == "PM":
-                date_hour = str(int(manual_formatted_date[hour_position:hour_position+2])+12)
+    date_year = str(date.year)
+    date_day = str(date.day).zfill(2)
+    date_month = str(date.month).zfill(2)
+    date_hour = str(date.hour).zfill(2)
+    date_minute = str(date.minute).zfill(2)
+    if twenty_four_hour_time_format == False:
+        if int(date_hour) > 12:
+            date_period = "PM"
+            manual_format_date_hour = str(int(date_hour)-12).zfill(2)
         else:
-            date_period = ""
-        
+            date_period = "AM"
+            manual_format_date_hour = date_hour
     else:
-        date_year = str(date.year)
-        date_day = str(date.day).zfill(2)
-        date_month = str(date.month).zfill(2)
-        date_hour = str(date.hour).zfill(2)
-        date_minute = str(date.minute).zfill(2)
-        if twenty_four_hour_time_format == False:
-            if int(date_hour) > 12:
-                date_period = "PM"
-                manual_format_date_hour = str(int(date_hour)-12).zfill(2)
-            else:
-                date_period = "AM"
-                manual_format_date_hour = date_hour
-        else:
-            date_period = ""
-        
-        manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", manual_format_date_hour).replace("mm", date_minute).replace("[AM/PM]", date_period)
+        date_period = ""
     
+    manual_formatted_date = date_format.replace("YYYY", date_year).replace("MM", date_month).replace("DD", date_day).replace("HH", manual_format_date_hour).replace("mm", date_minute).replace("[AM/PM]", date_period)
+
     sortable_date = f"{date_year}{date_month}{date_day}{date_hour}{date_minute}"
 
     return sortable_date, manual_formatted_date, date_year, date_month, date_day, date_hour, date_minute, date_period
@@ -181,7 +176,7 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
 def read_markdown_fill_posts(list_of_files): # Creating posts dictionary
     for file in list_of_files:
         file_title = ""
-        file_date = ""
+        file_date = datetime.min
         file_year = ""
         file_author = ""
         file_summary = ""
@@ -195,7 +190,9 @@ def read_markdown_fill_posts(list_of_files): # Creating posts dictionary
                     file_title = line.replace("Title:", "").strip()
                 elif "Date:" in line:
                     file_date = line.replace("Date:", "").strip()
-                    file_year = parse_date_time(file_date, "manual_date")[2]
+                    datetime_formatted_date_format = convert_date_format()
+                    file_date = datetime.strptime(file_date, datetime_formatted_date_format)
+                    file_year = str(file_date.year)
                 elif "Author:" in line:
                     file_author = line.replace("Author:", "").strip()
                     authors.add(file_author)
@@ -208,19 +205,17 @@ def read_markdown_fill_posts(list_of_files): # Creating posts dictionary
                 else:
                     if file_title == "":
                         file_title = file_name
-                    if file_date == "":
-                        file_cdate = datetime.strptime(time.ctime(os.path.getmtime((file))), "%a %b %d %H:%M:%S %Y")
-                        file_date = parse_date_time(file_cdate, "auto_date")
-                        file_date = file_date[1]
-                        file_year = str(file_cdate.year)
+                    if file_date == datetime.min:
+                        file_date = datetime.strptime(time.ctime(os.path.getmtime((file))), "%a %b %d %H:%M:%S %Y")
+                        file_year = str(file_date.year)
                     if file_author == "":
                         file_author = parse_json_config(config, "default_author")
                         authors.add(file_author)
 
                 years.add(file_year)
-                sortable_date = parse_date_time(file_date, "manual_date")[0]
+                sortable_date = f"{file_date.year}{str(file_date.month).zfill(2)}{str(file_date.day).zfill(2)}{str(file_date.hour).zfill(2)}{str(file_date.minute).zfill(2)}"
 
-            posts.update({file_name: (sortable_date, file_title, file_date, file_year, file_author, file_summary, file_tags)}) 
+            posts.update({file_name: (sortable_date, file_title, parse_date_time(file_date)[1], file_year, file_author, file_summary, file_tags)}) 
 
 
 def read_markdown_create_indices(list_of_posts): # Creating html files for indexes
