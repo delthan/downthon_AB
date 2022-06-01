@@ -6,11 +6,7 @@ import time
 import json
 
 
-header_html = str("./templates/header.html")
-footer_html = str("./templates/footer.html")
-swag_html = str("./templates/swag.html")
-index_html = str("./templates/index.html")
-post_html = str("./templates/post.html")
+
 config = str("./config/config.json")
 files = list()
 posts = dict()
@@ -21,10 +17,26 @@ years = set()
 
 def main(): # program flow
     files_setup()
+    define_html_templates()
     read_markdown_fill_posts(files)
     folder_checker()
     read_markdown_write_posts_html(files)
     read_markdown_create_indices(posts)
+    return
+
+def define_html_templates():
+    html_template = parse_json_config(config, "html_templates")
+    global header_html
+    global footer_html
+    global swag_html
+    global index_html
+    global post_html
+    header_html = os.path.join(html_template, "header.html")
+    footer_html = os.path.join(html_template, "footer.html")
+    swag_html = os.path.join(html_template, "swag.html")
+    index_html = os.path.join(html_template, "index.html")
+    post_html = os.path.join(html_template, "post.html")
+
     return
 
 
