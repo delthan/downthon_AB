@@ -14,5 +14,5 @@
 * need to make some improvements to the overall look of the blog html
 * index pagination? (not at release, not sure how to handle)
 * a sidebar would be great, with a link to the individual author and tag pages and the about page (not at release, not sure how to handle)
-* look for more places to use date parsing function, to make code more readable
-* should I build .exe and .sh files to ease usage? (py-builder)
+* should I build .exe and .whateverlinuxuses files to ease usage? (py-builder?)
+* need to fix the templates folder and functionality to make adding user created templates easier
