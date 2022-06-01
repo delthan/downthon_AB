@@ -13,7 +13,7 @@
  
  "default_author" : "anonymous",
  "site_title" : "a downthon_AB blog",
- "html_templates" : "./templates/original",
+ "templates_directory" : "./templates/original",
  "add_sortable_date_to_file_name" : true,
  "use_title_as_file_name" : true,
  "generate_author_index" : true,

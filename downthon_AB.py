@@ -25,17 +25,17 @@ def main(): # program flow
     return
 
 def define_html_templates():
-    html_template = parse_json_config(config, "html_templates")
+    templates_directory = parse_json_config(config, "templates_directory")
     global header_html
     global footer_html
     global swag_html
     global index_html
     global post_html
-    header_html = os.path.join(html_template, "header.html")
-    footer_html = os.path.join(html_template, "footer.html")
-    swag_html = os.path.join(html_template, "swag.html")
-    index_html = os.path.join(html_template, "index.html")
-    post_html = os.path.join(html_template, "post.html")
+    header_html = os.path.join(templates_directory, "header.html")
+    footer_html = os.path.join(templates_directory, "footer.html")
+    swag_html = os.path.join(templates_directory, "swag.html")
+    index_html = os.path.join(templates_directory, "index.html")
+    post_html = os.path.join(templates_directory, "post.html")
 
     return
 
@@ -135,6 +135,7 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
         
         file_name = os.path.basename(file).replace(".md", "").replace(".txt", "").strip().lower()
         html_directory = parse_json_config(config, "html_directory")
+        templates_directory = parse_json_config(config, "templates_directory")
         output_file_year = str(posts.get(file_name)[3])
         output_file_sortable_date = str(posts.get(file_name)[0])
         output_file_title_as_filename = str(posts.get(file_name)[1]).lower().replace(" ", "-")
@@ -184,6 +185,10 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
             site_title = parse_json_config(config, "site_title")
             header = header.replace("[[$HEADER_LINK]]", "../index.html")
             header = header.replace("[[$SITE_TITLE]]", site_title)
+            if templates_directory == "./templates/original":
+                header = header.replace("[[$CSS_FILE]]", "https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
+            else:
+                header = header.replace("[[$CSS_FILE]]", f"{html_directory}/styles.css")
             header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
             html = header + html
         with open(parse_json_config(config, "swag_markdown")) as swag_md, open(swag_html) as swag:
@@ -195,7 +200,7 @@ def read_markdown_write_posts_html(list_of_files): # Creating html files for ind
             footer_md = footer_md.read()
             footer = footer.read()
             if parse_json_config(config, "generate_about_page") == True:
-                footer = footer.replace("[[$FOOTER_LINK]]", "./about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
+                footer = footer.replace("[[$FOOTER_LINK]]", "../about.html").replace("[[$FOOTER_TEXT]]", "About this blog")
             else:
                 footer = footer.replace("[[$FOOTER_LINK]]", "").replace("[[$FOOTER_TEXT]]", "")
             footer = footer.replace("[[$CONTENT]]", markdown.markdown(footer_md))
@@ -255,6 +260,8 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
     sorted_posts = dict()
     sorted_posts_authors = dict()
     sorted_posts_tags = dict()
+    templates_directory = parse_json_config(config, "templates_directory")
+    html_directory = parse_json_config(config, "html_directory")
 
     for post in list_of_posts: # pulling post name and date out of posts dict
         post_value = str(list_of_posts.get(post)[0])
@@ -273,6 +280,10 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
         site_title = parse_json_config(config, "site_title")
         header = header.replace("[[$HEADER_LINK]]", "./index.html")
         header = header.replace("[[$SITE_TITLE]]", site_title)
+        if templates_directory == "./templates/original":
+            header = header.replace("[[$CSS_FILE]]", "https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
+        else:
+            header = header.replace("[[$CSS_FILE]]", f"{html_directory}/styles.css")
         header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
         index_html_output = header
     for post in sorted_posts: # filling index_html_output
@@ -338,6 +349,10 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
                 site_title = parse_json_config(config, "site_title")
                 header = header.replace("[[$HEADER_LINK]]", "../index.html")
                 header = header.replace("[[$SITE_TITLE]]", site_title)
+                if templates_directory == "./templates/original":
+                    header = header.replace("[[$CSS_FILE]]", "https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
+                else:
+                    header = header.replace("[[$CSS_FILE]]", f"..{html_directory}/styles.css")
                 header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
                 authors_html_output = header
             for post in filtered_posts_by_author:
@@ -393,6 +408,10 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
                     site_title = parse_json_config(config, "site_title")
                     header = header.replace("[[$HEADER_LINK]]", "../index.html")
                     header = header.replace("[[$SITE_TITLE]]", site_title)
+                    if templates_directory == "./templates/original":
+                        header = header.replace("[[$CSS_FILE]]", "https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
+                    else:
+                        header = header.replace("[[$CSS_FILE]]", f"..{html_directory}/styles.css")
                     header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
                     tags_html_output = header
                 for post in filtered_posts_by_tag:
@@ -429,8 +448,12 @@ def read_markdown_create_indices(list_of_posts): # Creating html files for index
             header = header.read()
             header_md = header_md.read()
             site_title = parse_json_config(config, "site_title")
-            header = header.replace("[[$HEADER_LINK]]", "../index.html")
+            header = header.replace("[[$HEADER_LINK]]", "./index.html")
             header = header.replace("[[$SITE_TITLE]]", site_title)
+            if templates_directory == "./templates/original":
+                header = header.replace("[[$CSS_FILE]]", "https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
+            else:
+                header = header.replace("[[$CSS_FILE]]", f"..{html_directory}/styles.css")
             header = header.replace("[[$CONTENT]]", markdown.markdown(header_md))
             html = header + html
         with open(parse_json_config(config, "footer_markdown")) as footer_md, open(footer_html) as footer:
