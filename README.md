@@ -8,6 +8,10 @@ downthon_AB is also my very first coding project. I am starting on my journey of
 
 Given that, please have appropriate expectations for how usable or stable this is for anything other than just local usage.
 
+## What's with the name?
+
+The name is a concatenation of the end of the words Markdown and Python. Obviously.
+
 ## How do I use it?
 
 Just download the files and folders above and place them in a folder in your computer. You will also need to install [Python](https://www.python.org/) and [Python-Markdown](https://python-markdown.github.io/). Then you can run the downthon_AB.py script from a command terminal and the files in the /markdown folder will be recreated as .html files in the /html folder.
@@ -22,11 +26,9 @@ Yes! In the /config folder there is a file called config.json that allows you to
 
 One thing you will _definitely_ want to change is the default information entered in the header.md, footer.md, swag.md, and about.md files also located in the /config folder. The header and footer files are added to every file created by the script, the swag file is added to each individual post, and the about.md is rendered as a separate about.html file.
 
-You can also edit the associated .html files in the /templates folder.
+You will also probably want to change the "site_title" and "default_author" option in config.json.
 
-## What's with the name?
-
-The name is a concatenation of the end of the words Markdown and Python. Obviously.
+If you want to create a separate set of .html templates, copy the files in the /templates/original folder and move them to a newly created folder inside /templates. Then edit the files as you wish, and change the "templates_directory" option in config.json to your new folder. You will need to place your CSS in a styles.css file inside the /html folder you are outputting to.
 
 ## Are you going to keep developing downthon_AB?
 
