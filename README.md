@@ -48,7 +48,6 @@ I would _**love**_ constructive feedback. If anyone reading this has any insight
   * If you have changed the option for a 24 hour clock to True, then you can ignore the [AM/PM] string.
   * If you don't follow the format listed above, then it is probable that the script will interpret your dates incorrectly.
 * I don't know much about HTML or CSS so I'm grateful for the existence of [Water.css](https://watercss.kognise.dev/) to style the output .html files.
-  * If you want to use another .css file, or roll your own, please edit the header.html file in the /templates folder.
 * If I do come back to add more features, the first two would be as follows:
   * Adding pagination to the main index.html file. Currently, everything that the script sees as a post ends up on that file, so it could get over-large with enough posts.
   * Adding a sidebar to the output HTML files.
