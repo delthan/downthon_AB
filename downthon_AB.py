@@ -24,6 +24,7 @@ def main(): # program flow
     read_markdown_create_indices(posts)
     return
 
+
 def define_html_templates():
     templates_directory = parse_json_config(config, "templates_directory")
     global header_html
