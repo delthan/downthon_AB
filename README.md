@@ -24,7 +24,7 @@ Please look at the default /markdown folder and /html folder to see an example o
 
 Yes! In the /config folder there is a file called config.json that allows you to adjust several variables, e.g. the location of the input folder or output folder.
 
-One thing you will _definitely_ want to change is the default information entered in the header.md, footer.md, swag.md, and about.md files also located in the /config folder. The header and footer files are added to every file created by the script, the swag file is added to each individual post, and the about.md is rendered as a separate about.html file.
+One thing you will _definitely_ want to change is the default information entered in the header.md, footer.md, swag.md, and about.md files located in the /templates folder. The header and footer files are added to every file created by the script, the swag file is added to each individual post, and the about.md is rendered as a separate about.html file.
 
 You will also probably want to change the "site_title" and "default_author" option in config.json.
 
