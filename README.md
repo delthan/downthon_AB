@@ -6,11 +6,11 @@ downthon_AB is a simple Python script that can turn a folder of Markdown formatt
 
 downthon_AB is also my very first coding project. I am starting on my journey of learning to code and this is the project I picked as my starter. I had the idea many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice.
 
-Given that, please have appropriate expectations for how usable or stable this is for anything other than just local usage.
+Given that, please have appropriate expectations for how usable or stable this is for anything other than just casual usage.
 
 ## What's with the name?
 
-The name is a concatenation of the end of the words Markdown and Python. Obviously.
+The name is a concatenation of the end of the words Markdown and Python. Obviously. 🙂
 
 ## How do I use it?
 
@@ -32,7 +32,7 @@ If you want to create a separate set of .html templates, copy the files in the /
 
 ## Are you going to keep developing downthon_AB?
 
-Maybe?
+Maybe.
 
 Owing to this being my first project, quite a lot of this script could use some improvement. I know there are a ton of things I did in convoluted ways that could be streamlined, and I know some of the areas where I am repeating myself could be refactored into cleaner, better written code. And it might be a good exercise to do the work to make those changes, or even add new features, as a part of learning.
 
