@@ -3,10 +3,10 @@
  "date_format": "MM/DD/YYYY HH:mm [AM/PM]",
  "twenty_four_hour_time_format" : false,
 
- "header_markdown": "./config/header.md",
- "footer_markdown": "./config/footer.md",
- "swag_markdown": "./config/swag.md",
- "about_markdown": "./config/about.md",
+ "header_markdown": "./templates/header.md",
+ "footer_markdown": "./templates/footer.md",
+ "swag_markdown": "./templates/swag.md",
+ "about_markdown": "./templates/about.md",
 
  "html_directory" : "./html/",
  "markdown_directory" : "./markdown/",
