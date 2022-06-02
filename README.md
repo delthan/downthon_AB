@@ -6,7 +6,7 @@ downthon_AB is a simple Python script that can turn a folder of Markdown formatt
 
 downthon_AB is also my very first coding project. I am starting on my journey of learning to code and this is the project I picked as my starter. I had the idea many years ago, back when new blogging platforms were all the rage, and it seemed like a good choice.
 
-Given that, please have appropriate expectations for how usable or stable this is for anything other than just local usage.
+Given that, please have appropriate expectations for how usable or stable this is for anything other than just casual usage.
 
 ## What's with the name?
 
